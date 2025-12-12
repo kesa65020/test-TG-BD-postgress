@@ -11,9 +11,9 @@ Use the schema and semantics defined below when generating SQL.
 ## 2) Database Schema (Full Column Types and Relationships)
 
 ### videos table:
-- id BIGINT PRIMARY KEY
-- creator_id BIGINT NOT NULL
-- video_created_at TIMESTAMP NOT NULL
+- id UUID PRIMARY KEY
+- creator_id VARCHAR(50) -- строка, НЕ число! Всегда используй кавычки: creator_id = 'value'
+- video_created_at TIMESTAMP
 - views_count BIGINT DEFAULT 0
 - likes_count BIGINT DEFAULT 0
 - comments_count BIGINT DEFAULT 0
@@ -22,8 +22,8 @@ Use the schema and semantics defined below when generating SQL.
 - updated_at TIMESTAMP DEFAULT NOW()
 
 ### video_snapshots table:
-- id BIGINT PRIMARY KEY
-- video_id BIGINT NOT NULL REFERENCES videos(id)
+- id VARCHAR(50) PRIMARY KEY
+- video_id UUID REFERENCES videos(id)
 - views_count BIGINT DEFAULT 0
 - likes_count BIGINT DEFAULT 0
 - comments_count BIGINT DEFAULT 0
@@ -34,6 +34,8 @@ Use the schema and semantics defined below when generating SQL.
 - delta_reports_count BIGINT DEFAULT 0
 - created_at TIMESTAMP NOT NULL
 - updated_at TIMESTAMP DEFAULT NOW()
+
+ВАЖНО: creator_id это VARCHAR, поэтому при сравнении ВСЕГДА используй строку в кавычках: WHERE creator_id = '123'
 
 ## 3) Semantic Difference and When to Use Which Columns
 
@@ -66,7 +68,7 @@ Accept and correctly interpret the following date forms commonly used in Russian
    SQL: SELECT COUNT(*) FROM videos;
 
 2) NL: "Сколько видео у креатора с id 123 вышло с 1 ноября 2025 по 5 ноября 2025 включительно?"
-   SQL: SELECT COUNT(*) FROM videos WHERE creator_id = 123 AND video_created_at >= '2025-11-01' AND video_created_at < '2025-11-06';
+   SQL: SELECT COUNT(*) FROM videos WHERE creator_id = '123' AND video_created_at >= '2025-11-01' AND video_created_at < '2025-11-06';
 
 3) NL: "Сколько видео набрало больше 100 000 просмотров за всё время?"
    SQL: SELECT COUNT(*) FROM videos WHERE views_count > 100000;
